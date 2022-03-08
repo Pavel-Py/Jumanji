@@ -1,0 +1,54 @@
+from django.views.generic import ListView, DetailView
+from django.views.generic.base import TemplateView
+
+from jum.models import Specialty, Vacancy, Company
+
+
+class MainView(TemplateView):
+    template_name = 'jum/index.html'
+
+    def get_context_data(self, **kwargs):
+        specialities_amount = {}
+        for spec in Specialty.objects.all():
+            specialities_amount[spec] = Vacancy.objects.filter(specialty=spec).count()
+        company_amount = {}
+        for comp in Company.objects.all():
+            company_amount[comp] = Vacancy.objects.filter(company=comp).count()
+        return {'specialities_amount': specialities_amount, 'company_amount': company_amount}
+
+
+class CompanyView(DetailView):
+    model = Company
+    template_name = 'jum/company.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CompanyView, self).get_context_data(**kwargs)
+        context['vacancies'] = Vacancy.objects.filter(company__pk=self.kwargs['pk'])
+        return context
+
+
+class VacanciesByCatView(ListView):
+    model = Vacancy
+    template_name = 'jum/vacancies.html'
+
+    def get_queryset(self):
+        return Vacancy.objects.filter(specialty__code=self.kwargs['field'])
+
+    def get_context_data(self, **kwargs):
+        context = super(VacanciesByCatView, self).get_context_data(**kwargs)
+        context['specialty'] = Specialty.objects.get(code=self.kwargs['field'])
+        return context
+
+
+class AllVacanciesView(ListView):
+    model = Vacancy
+    template_name = 'jum/vacancies.html'
+    context_object_name = 'vacancies'
+
+
+class VacancyView(DetailView):
+    model = Vacancy
+    template_name = 'jum/vacancy.html'
+
+
+
