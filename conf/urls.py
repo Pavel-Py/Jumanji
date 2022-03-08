@@ -10,8 +10,8 @@ handler500 = custom_handler500
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', MainView.as_view(), name='index'),
-    path('vacancies/', AllVacanciesView.as_view(), name='allvacancies'),
-    re_path(r'^vacancy/(?P<pk>\d+$)', VacancyView.as_view(), name='vacancy'),
-    re_path(r'company/(?P<pk>\d+$)', CompanyView.as_view(), name='company'),
-    re_path(r'vacancies/cat/(?P<field>\w+$)', VacanciesByCatView.as_view(), name='catvacancies'),
+    re_path(r'^vacancies/$', AllVacanciesView.as_view(), name='allvacancies'),
+    re_path(r'^vacancy/(?P<pk>\d+)/$', VacancyView.as_view(), name='vacancy'),
+    re_path(r'^company/(?P<pk>\d+)/$', CompanyView.as_view(), name='company'),
+    re_path(r'vacancies/cat/(?P<field>\w+)/$', VacanciesByCatView.as_view(), name='catvacancies'),
 ]
