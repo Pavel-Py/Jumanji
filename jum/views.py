@@ -1,3 +1,4 @@
+from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 
@@ -49,6 +50,15 @@ class AllVacanciesView(ListView):
 class VacancyView(DetailView):
     model = Vacancy
     template_name = 'jum/vacancy.html'
+
+
+def custom_handler404(request, exception):
+    return HttpResponseNotFound('Страница не найдена, ошибка 404')
+
+
+def custom_handler500(request):
+    return HttpResponseServerError('Ошибка сервера!')
+
 
 
 

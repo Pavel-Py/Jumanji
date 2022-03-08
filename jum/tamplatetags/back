@@ -1,6 +1,0 @@
-from django.template.loader_tags import register
-
-
-@register.simple_tag
-def back(url):
-    return "window.location=' + url +'"
