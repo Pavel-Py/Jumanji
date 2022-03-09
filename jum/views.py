@@ -9,13 +9,16 @@ class MainView(TemplateView):
     template_name = 'jum/index.html'
 
     def get_context_data(self, **kwargs):
+        context = super(MainView, self).get_context_data(**kwargs)
         specialities_amount = {}
         for spec in Specialty.objects.all():
             specialities_amount[spec] = Vacancy.objects.filter(specialty=spec).count()
+        context['specialities_amount'] = specialities_amount
         company_amount = {}
         for comp in Company.objects.all():
             company_amount[comp] = Vacancy.objects.filter(company=comp).count()
-        return {'specialities_amount': specialities_amount, 'company_amount': company_amount}
+        context['company_amount'] = company_amount
+        return context
 
 
 class CompanyView(DetailView):
