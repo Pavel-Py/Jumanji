@@ -1,0 +1,72 @@
+{% extends 'jum/base.html' %}
+{% load crispy_forms_tags %}
+{% block head %}
+<head>
+  <meta charset="UTF-8">
+  <title>Моя компания | Джуманджи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #F6F2E6;
+    }
+  </style>
+</head>
+{% endblock %}
+{% block container %}
+<body>
+  <main class="container mt-3 pb-5">
+    <div class="row mt-5">
+      <div class="col-12 col-lg-4">
+        <aside class="pt-3 pb-4 px-4 mb-5 card">
+          <h1 class="h3 pt-2 pb-2">Моя компания</h1>
+          <div class="nav flex-column nav-pills">
+            <a class="nav-link" href="{% url 'user-company' %}">1. Информация о&nbsp;компании</a>
+            <a class="nav-link active" href="{% url 'user-vacancy' %}">2. Вакансии</a>
+          </div>
+        </aside>
+      </div>
+      <div class="col-12 col-lg-8">
+        {% if object_list.count > 0 %}
+        {% for application in object_list %}
+        <div class="card pl-2 mb-4">
+          <div class="row">
+            <div class="col-12 col-md-8 col-lg-4">
+              <p class="h5 p-2 m-2">Кандидат</p>
+            </div>
+            <div class="col-12 col-md-8 col-lg-8">
+              <p class="p-2 m-2">{{ application.written_username}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-8 col-lg-4">
+              <p class="h5 p-2 m-2">Телефон</p>
+            </div>
+            <div class="col-12 col-md-8 col-lg-8">
+              <p class="p-2 m-2">{{ application.written_phone }}</p>
+            </div>
+          </div>
+          <div class="row ">
+            <div class="col-12 col-md-8 col-lg-4">
+              <p class="h5 p-2 m-2">Сопроводительное письмо</p>
+            </div>
+            <div class="col-12 col-md-8 col-lg-8">
+              <p class="p-2 m-2">{{ application.written_cover_letter }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="card pl-2 mb-4">
+          <div class="row">
+            <div class="col-12 col-md-8 col-lg-4">
+              <p class="h5 pt-2 pb-2">Нет откликов</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</body>
+{% endblock %}
