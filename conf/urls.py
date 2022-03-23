@@ -6,7 +6,7 @@ from django.urls import path, re_path
 
 from jum.views import MainView, CompanyView, AllVacanciesView, VacanciesByCatView, VacancyView, LoginUserView, \
     CompanyEditView, CompanyCreateView, CompanyStartView, UserVacancyView, VacancyCreteView, \
-    VacancyEditView, ApplicationsView, UserCompanyView
+    VacancyEditView, ApplicationsView
 from jum.views import custom_handler500, custom_handler404, RegisterUserView
 
 urlpatterns = [
@@ -19,7 +19,6 @@ urlpatterns = [
     re_path(r'^login/$', LoginUserView.as_view(), name='login'),
     re_path(r'^register/$', RegisterUserView.as_view(), name='register'),
     re_path(r'^logout/$', LogoutView.as_view(), name='logout'),
-    re_path(r'^user-company/$', UserCompanyView.as_view(), name='user-company'),
     re_path(r'^company-edit/$', CompanyEditView.as_view(), name='company-edit'),
     re_path(r'^company-create/$', CompanyCreateView.as_view(), name='company-create'),
     re_path(r'^company-start/$', CompanyStartView.as_view(), name='company-start'),

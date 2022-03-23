@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Row, Column, Layout
+from crispy_forms.layout import Submit, Row, Column, Layout, HTML
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -60,8 +60,10 @@ class CompanyCreate(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('title', css_class='form-group col-md-6 mb-0', data_name="whatever"),
-                Column('logo', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
+                Column(HTML("""{% if form.logo.value %}<img width="150" class="img-responsive" \
+                src="{{ object.logo.url }}">{% endif %}""", ),
+                       'logo',
+                       css_class='form-group col-md-6 mb-0'),
             ),
             Row(
                 Column('employee_count', css_class='form-group col-md-6 mb-0'),

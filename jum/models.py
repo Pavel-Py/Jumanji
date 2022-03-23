@@ -8,7 +8,7 @@ class Company(models.Model):
     logo = models.ImageField(upload_to='company')
     description = models.TextField()
     employee_count = models.IntegerField()
-    owner = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    owner = models.OneToOneField(User, related_name='company', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return '%s %s %s' % (self.title, self.location, self.description)

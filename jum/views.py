@@ -1,13 +1,17 @@
+from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+
 from django.http import HttpResponseNotFound, HttpResponseServerError, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.base import TemplateView
 
 from jum.forms import RegisterUserForm, LoginUserForm, CompanyCreate, VacancyCreate, ApplicationCreate
 from jum.models import Specialty, Vacancy, Company, Application
+from jum.mixins import ForUserWithoutCompany, LoginNotRequiredMixin, \
+    ForUserWithCompanyMixin, ForUserWithVacancyMixin
 
 
 class MainView(TemplateView):
@@ -72,11 +76,16 @@ class VacancyView(CreateView):
         return context
 
 
-class RegisterUserView(CreateView):
+class RegisterUserView(LoginNotRequiredMixin, CreateView):
     model = User
     form_class = RegisterUserForm
     template_name = 'jum/register.html'
     success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('index')
 
 
 class LoginUserView(LoginView):
@@ -85,19 +94,11 @@ class LoginUserView(LoginView):
     template_name = 'jum/login.html'
 
 
-class UserCompanyView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        if Company.objects.filter(owner=self.request.user.id).count() > 0:
-            return '/company-edit/'
-        else:
-            return '/company-start/'
-
-
-class CompanyStartView(TemplateView):
+class CompanyStartView(ForUserWithoutCompany, TemplateView):
     template_name = 'jum/company-start.html'
 
 
-class CompanyCreateView(CreateView):
+class CompanyCreateView(ForUserWithoutCompany, CreateView):
     model = Company
     form_class = CompanyCreate
     template_name = 'jum/company-create.html'
@@ -108,7 +109,7 @@ class CompanyCreateView(CreateView):
         return redirect('company-edit')
 
 
-class CompanyEditView(UpdateView):
+class CompanyEditView(ForUserWithCompanyMixin, UpdateView):
     model = Company
     template_name = 'jum/company-edit.html'
     form_class = CompanyCreate
@@ -118,16 +119,15 @@ class CompanyEditView(UpdateView):
         return Company.objects.get(owner=self.request.user.id)
 
 
-class UserVacancyView(ListView):
+class UserVacancyView(ForUserWithVacancyMixin, ListView):
     model = Vacancy
     template_name = 'jum/user-vacancy.html'
 
     def get_queryset(self):
-        user_company = Company.objects.get(owner=1).id
-        return Vacancy.objects.filter(company=user_company)
+        return self.request.user.company.vacancies.all()
 
 
-class VacancyCreteView(CreateView):
+class VacancyCreteView(ForUserWithCompanyMixin, CreateView):
     model = Vacancy
     template_name = 'jum/vacancy-create.html'
     form_class = VacancyCreate
@@ -138,7 +138,7 @@ class VacancyCreteView(CreateView):
         return redirect('company-edit')
 
 
-class VacancyEditView(UpdateView):
+class VacancyEditView(ForUserWithVacancyMixin, UpdateView):
     model = Vacancy
     template_name = 'jum/vacancy-edit.html'
     form_class = VacancyCreate
@@ -153,7 +153,7 @@ class VacancyEditView(UpdateView):
             raise Http404()
 
 
-class ApplicationsView(ListView):
+class ApplicationsView(ForUserWithVacancyMixin, ListView):
     model = Application
     template_name = 'jum/applications.html'
 
