@@ -2,7 +2,7 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 
-from django.http import HttpResponseNotFound, HttpResponseServerError, Http404
+from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
@@ -119,7 +119,7 @@ class CompanyEditView(ForUserWithCompanyMixin, UpdateView):
         return Company.objects.get(owner=self.request.user.id)
 
 
-class UserVacancyView(ForUserWithVacancyMixin, ListView):
+class UserVacancyView(ForUserWithCompanyMixin, ListView):
     model = Vacancy
     template_name = 'jum/user-vacancy.html'
 
@@ -135,25 +135,20 @@ class VacancyCreteView(ForUserWithCompanyMixin, CreateView):
     def form_valid(self, form):
         form.instance.company = Company.objects.get(owner=self.request.user.id)
         form.save()
-        return redirect('company-edit')
+        return redirect('/user-vacancy/')
 
 
 class VacancyEditView(ForUserWithVacancyMixin, UpdateView):
     model = Vacancy
     template_name = 'jum/vacancy-edit.html'
     form_class = VacancyCreate
-    success_url = 'user-vacancy'
+    success_url = reverse_lazy('user-vacancy')
 
     def get_object(self, queryset=None):
-        user_company = Company.objects.get(owner=self.request.user.id)
-        vacancy = Vacancy.objects.get(id=self.kwargs['pk'])
-        if user_company == vacancy.company:
-            return Vacancy.objects.get(id=self.kwargs['pk'])
-        else:
-            raise Http404()
+        return Vacancy.objects.get(id=self.kwargs['pk'])
 
 
-class ApplicationsView(ForUserWithVacancyMixin, ListView):
+class ApplicationsView(ForUserWithCompanyMixin, ListView):
     model = Application
     template_name = 'jum/applications.html'
 

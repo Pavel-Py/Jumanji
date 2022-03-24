@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 
+from jum.models import Vacancy
+
 
 class LoginNotRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
@@ -34,10 +36,10 @@ class ForUserWithoutCompany(LoginRequiredMixin, BaseForUserWithoutCompany):
 
 class BaseForUserWithVacancyMixin:
     def dispatch(self, request, *args, **kwargs):
-        if hasattr(request.user.company, 'vacancies'):
+        if Vacancy.objects.get(id=kwargs['pk']) in request.user.company.vacancies.all():
             return super().dispatch(request, *args, **kwargs)
         else:
-            return HttpResponseRedirect('/vacancy-create/')
+            return HttpResponseRedirect('/user-vacancy/')
 
 
 class ForUserWithVacancyMixin(LoginRequiredMixin, BaseForUserWithCompanyMixin, BaseForUserWithVacancyMixin):
