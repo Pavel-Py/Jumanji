@@ -26,8 +26,7 @@ class BaseForUserWithoutCompany:
     def dispatch(self, request, *args, **kwargs):
         if hasattr(request.user, 'company'):
             return HttpResponseRedirect('/company-edit/')
-        else:
-            return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ForUserWithoutCompany(LoginRequiredMixin, BaseForUserWithoutCompany):
