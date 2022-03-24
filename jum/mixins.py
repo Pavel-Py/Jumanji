@@ -35,7 +35,7 @@ class ForUserWithoutCompany(LoginRequiredMixin, BaseForUserWithoutCompany):
 
 class BaseForUserWithVacancyMixin:
     def dispatch(self, request, *args, **kwargs):
-        if Vacancy.objects.get(id=kwargs['pk']) in request.user.company.vacancies.all():
+        if Vacancy.objects.filter(id=kwargs['pk']).first() in request.user.company.vacancies.all():
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/user-vacancy/')
